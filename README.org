@@ -1,16 +1,117 @@
-一个org模式的插件.用来实现一项鸡肋的功能
-#+begin_src org
- * trait book
-   ** 目录
-   ** 简介
- * struct my-book
- * impl book for my-book
-   ** 目录
-   你好,这里是目录
-   ** 简介
-   你好,这里是简介
+#+title: OPL — Org Pseudo-Language
+#+author: lxc
+
+OPL 是一个 Emacs Lisp 包，在 Org mode 中引入了类似 Rust 的 ~trait~ / ~struct~ / ~impl~ 语法，用于组织和管理笔记内容的一致性。
+
+* 概述
+
+OPL 提供三种顶层 heading 类型：
+
+| 关键字   | 对应概念   | 作用                                 |
+|----------+------------+--------------------------------------|
+| ~trait~  | 接口/契约  | 定义一份「需要包含哪些小节」的模板   |
+| ~struct~ | 实体       | 一个具体的事物（可附带自身内容）     |
+| ~impl~   | 实现       | 为某个 struct 实现某个 trait         |
+
+~impl~ 内部补全 trait 要求的每个小节的 /实际内容/。运行 ~M-x opl-run~ 后，OPL 会：
+
+1. 检查每个 ~impl~ 的结构是否符合对应 ~trait~ 的定义（/conformity check/）。
+2. 在 ~trait~ 和 ~struct~ 所在位置 /自动插入/ 指向 ~impl~ 的文件链接（带 ~:autolink:~ 标签），实现双向导航。
+
+* 安装
+
+1. 将 ~opl~ 目录放到 ~load-path~ 下。
+2. 在 ~init.el~ 中添加：
+
+#+begin_src elisp
+(add-to-list 'load-path "~/.emacs.d/my-crate/opl")
+(require 'opl-command)
 #+end_src
-impl book for my-book 里的"book"和"my-book"既可以是本文件内的,也可以是文件链接的形式,这样实现跨文件的impl.
 
-后期可能考虑增加功能...
+* 快速入门
 
+** 1. 定义一个 trait（契约）
+
+在某个 Org 文件中（比如 ~traits.org~）：
+
+#+begin_src org
+* trait 书籍
+  ** 目录
+  ** 简介
+  ** 读后感
+#+end_src
+
+~trait 书籍~ 规定了任何「一本书」的实现都需要包含 /目录/、/简介/、/读后感/ 这三个小节。
+
+** 2. 定义一个 struct（实体）
+
+#+begin_src org
+* struct 红楼梦
+#+end_src
+
+struct 可以是最简形式（只有一个标题），也可以有自己的子节树作为「自身内容」。
+
+** 3. 编写 impl（实现）
+
+在另一个 Org 文件（或者同一个文件）中：
+
+#+begin_src org
+* impl 书籍 for 红楼梦
+  ** 目录
+  第一章 甄士隐梦幻识通灵……
+  ** 简介
+  《红楼梦》是中国古典四大名著之一……
+  ** 读后感
+  读罢掩卷，意味深长……
+#+end_src
+
+~impl~ 内部每个子标题的名称 /必须/ 与 ~trait~ 定义中的子标题完全对应。
+
+** 4. 运行 OPL
+
+#+begin_src elisp
+M-x opl-run
+#+end_src
+
+OPL 会：
+
+- 检查 ~impl 书籍 for 红楼梦~ 的结构是否与 ~trait 书籍~ 完全一致。
+- 若一致，在 ~trait 书籍~ 和 ~struct 红楼梦~ 下各插入一条带 ~:autolink:~ 标签的文件链接，指向 ~impl~ 所在位置。
+
+再运行一次 ~opl-run~ 会先删除旧的 autolink，再重新生成。
+
+** 5. 跨文件引用
+
+trait 和 struct 可以跨文件引用。在 ~impl~ 行中使用 Org 文件链接即可：
+
+#+begin_src org
+* impl [[file:traits.org::*trait 书籍][trait 书籍]] for [[file:books.org::*struct 红楼梦][struct 红楼梦]]
+  ** 目录
+  ……
+#+end_src
+
+当 trait / struct 和 impl 不在同一文件时，必须使用链接形式。
+
+* 命令
+
+- ~M-x opl-run~ : 对当前文件执行 OPL 解析，检查所有 impl 的 conformity，并更新 autolink。
+
+* 目录结构
+
+| 文件             | 职责                                                      |
+|------------------+-----------------------------------------------------------|
+| ~opl-struct.el~  | 数据结构定义（~/node/~、~/trait/~、~/impl/~、~/struct/~） |
+| ~opl-parse.el~   | 解析 Org 文件，收集 trait/struct/impl                     |
+| ~opl-check.el~   | conformity 检查（impl 结构是否匹配 trait）                |
+| ~opl-link.el~    | autolink 的增删                                           |
+| ~opl-command.el~ | 对外命令 ~opl-run~                                        |
+
+* 未来计划
+
+- 更完善的错误检查（如 struct 重复定义、trait 不存在时的提示）。
+- 支持 trait 之间的继承。
+- 更详细的 conformity 报告。
+
+* License
+
+GPL v3
