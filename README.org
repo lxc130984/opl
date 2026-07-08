@@ -1,6 +1,6 @@
 一个org模式的插件.用来实现一项鸡肋的功能
 #+begin_src org
-  * trait book
+ * trait book
    ** 目录
    ** 简介
  * struct my-book
