@@ -1,0 +1,6 @@
+* struct my-book
+
+** [[file:~/.emacs.d/my-crate/opl/test.org::*impl e-book for \[\[file:test3.org::*struct my-book\]\[struct my-book\]\]][impl e-book for struct my-book]] :autolink:
+
+** [[file:~/.emacs.d/my-crate/opl/test.org::*impl \[\[file:test2.org::*trait book\]\[trait book\]\] for \[\[file:test3.org::*struct my-book\]\[struct my-book\]\]][impl trait book for struct my-book]] :autolink:
+

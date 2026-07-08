@@ -1,0 +1,5 @@
+* trait book
+* impl book for my-book
+
+* sldkfk
+** struct my-book
