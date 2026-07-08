@@ -1,6 +1,6 @@
 一个org模式的插件.用来实现一项鸡肋的功能
-#+begin_comment
- * trait book
+#+begin_src org
+  * trait book
    ** 目录
    ** 简介
  * struct my-book
@@ -9,7 +9,7 @@
    你好,这里是目录
    ** 简介
    你好,这里是简介
-#+end_comment
+#+end_src
 impl book for my-book 里的"book"和"my-book"既可以是本文件内的,也可以是文件链接的形式,这样实现跨文件的impl.
 
 后期可能考虑增加功能...
